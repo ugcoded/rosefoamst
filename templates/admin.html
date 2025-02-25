@@ -18,6 +18,7 @@
             color: #333;
             min-height: 100vh;
             display: flex;
+            flex-direction: column; /* Ensure content stacks on smaller screens */
         }
 
         /* Sidebar */
@@ -26,10 +27,10 @@
             background: #1a2a44;
             color: #ffffff;
             padding: 20px;
-            position: fixed;
             height: 100%;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition for mobile */
         }
 
         .sidebar h2 {
@@ -76,8 +77,8 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 250px;
             padding: 30px;
+            margin-left: 250px; /* Adjusted dynamically on mobile */
         }
 
         h1 {
@@ -126,6 +127,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             padding: 20px;
             transition: transform 0.3s ease;
+            width: 100%; /* Ensure full width on mobile */
         }
 
         .branch-section:hover, .branch-table:hover {
@@ -145,12 +147,15 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            overflow-x: auto; /* Allow horizontal scrolling on small screens */
+            display: block; /* Enable scrolling */
         }
 
         .horizontal-table th, .horizontal-table td {
             padding: 12px;
             border: 1px solid #e0e0e0;
             font-size: 14px;
+            min-width: 100px; /* Ensure minimum width for readability */
         }
 
         .horizontal-table th {
@@ -183,6 +188,7 @@
 
         .entry-table {
             width: 300px;
+            max-width: 100%; /* Ensure it fits on smaller screens */
             border-collapse: collapse;
             background: #ffffff;
             border-radius: 8px;
@@ -206,7 +212,6 @@
             background: #C5E3BA;
             color: #333;
             font-weight: 600;
-            width: 140px;
             text-align: right;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -214,7 +219,6 @@
 
         .entry-table td {
             color: #555;
-            width: 160px;
             text-align: left;
         }
 
@@ -233,7 +237,7 @@
             border: none;
             padding: 6px 12px;
             cursor: pointer;
-            margin-right: 5px;
+            margin: 2px;
             border-radius: 4px;
             font-size: 12px;
             transition: background-color 0.3s ease;
@@ -287,6 +291,7 @@
             background: #f9f9f9;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
+            width: 100%; /* Full width on mobile */
         }
 
         .edit-form input {
@@ -297,6 +302,7 @@
             border-radius: 4px;
             font-size: 12px;
             transition: border-color 0.3s ease;
+            box-sizing: border-box; /* Include padding in width */
         }
 
         .edit-form input:focus {
@@ -313,6 +319,8 @@
             border-radius: 4px;
             font-size: 12px;
             transition: background-color 0.3s ease;
+            width: 100%; /* Full width on mobile */
+            margin-top: 10px;
         }
 
         .edit-form button:hover {
@@ -321,21 +329,23 @@
 
         /* Charts and Messages */
         .chart-container {
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto 40px;
             background: #ffffff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
 
         .chart-table-container, .message-section {
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto 40px;
             background: #ffffff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
 
         .message-section h2 {
@@ -346,65 +356,130 @@
             text-align: center;
         }
 
-        /* Responsive Design */
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none; /* Hidden by default on desktop */
+            background: #1a2a44;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* Enhanced Responsive Design */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Stack sidebar and content vertically */
+            }
+
             .sidebar {
-                width: 200px;
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%; /* Hidden off-screen by default */
+                height: 100vh;
+                z-index: 1000;
+                padding: 10px;
+                transition: left 0.3s ease; /* Slide in/out */
             }
+
+            .sidebar.active {
+                left: 0; /* Slide in when active */
+            }
+
             .main-content {
-                margin-left: 200px;
+                margin-left: 0; /* Remove sidebar offset */
+                padding: 15px;
             }
+
+            .menu-toggle {
+                display: block; /* Show toggle button on mobile */
+                position: sticky;
+                top: 0;
+                z-index: 1100;
+            }
+
             h1 {
                 font-size: 24px;
             }
-            .branch-table h2, .message-section h2 {
+
+            .branch-section h2, .branch-table h2, .message-section h2 {
                 font-size: 18px;
             }
+
+            .horizontal-table th, .horizontal-table td {
+                font-size: 12px;
+                padding: 8px;
+            }
+
             .entry-table {
                 width: 100%;
                 margin: 0 0 20px;
             }
+
             .entry-table th, .entry-table td {
                 padding: 8px;
                 font-size: 12px;
             }
+
             .delete-btn, .edit-btn, .edit-form button {
                 padding: 4px 8px;
                 font-size: 10px;
             }
+
             .edit-form input {
                 padding: 6px;
-                font-size: 10px;
+                font-size: 12px;
             }
+
             #search-input {
                 width: 100%;
+            }
+
+            .download-btn {
+                padding: 8px 16px;
+                font-size: 12px;
             }
         }
 
         @media (max-width: 480px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 15px;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 15px;
-            }
             .sidebar ul li {
-                display: inline-block;
-                margin: 10px;
-            }
-            .dashboard button {
-                display: block;
-                width: 100%;
                 margin: 10px 0;
+            }
+
+            .sidebar ul li a, .sidebar ul li span {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .branch-section h2, .branch-table h2, .message-section h2 {
+                font-size: 16px;
+            }
+
+            .horizontal-table th, .horizontal-table td {
+                font-size: 10px;
+                padding: 6px;
+                min-width: 80px; /* Smaller min-width for tiny screens */
+            }
+
+            .delete-input {
+                width: 40px;
+                font-size: 10px;
             }
         }
     </style>
 </head>
 <body>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
@@ -498,7 +573,7 @@
                         <td>{{ entry['debt_paid'] }}</td>
                         <td>{{ entry['debt_closing'] }}</td>
                         <td>{{ entry['cumulative_opening'] }}</td>
-                        <td>{{ entry['cumulative_sales'] }}</td>
+                        <td>{{ entry['sales'] }}</td>
                         <td>{{ entry['cumulative_closing'] }}</td>
                         <td>
                             <button class="edit-btn" onclick="toggleEditForm('edit-form-{{ entry['id'] }}')">Edit</button>
@@ -588,11 +663,19 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+
         function showSection(section) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.sidebar a').forEach(el => el.classList.remove('active'));
             document.getElementById(section + '-section').classList.add('active');
             document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
+            if (window.innerWidth <= 768) {
+                toggleSidebar(); // Close sidebar on mobile after selection
+            }
         }
 
         function searchBranch() {
@@ -712,7 +795,14 @@
                         }
                     },
                     scales: {
-                        x: { stacked: true },
+                        x: { 
+                            stacked: true,
+                            ticks: {
+                                font: { size: 12 },
+                                maxRotation: 45, /* Rotate labels for better fit */
+                                minRotation: 45
+                            }
+                        },
                         y: {
                             stacked: true,
                             beginAtZero: true,

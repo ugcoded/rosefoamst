@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Entry Form</title>
     <style>
-        /* Reset default styles */
         * {
             margin: 0;
             padding: 0;
@@ -16,57 +15,78 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .nav {
-            max-width: 600px;
-            margin: 0 auto 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            flex-direction: column;
         }
 
-        .nav a {
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #1a2a44;
+            color: #ffffff;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s ease, transform 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a, .sidebar ul li span {
+            color: #b3c0d4;
             text-decoration: none;
-            color: #4CAF50;
-            font-weight: 600;
-            padding: 8px 12px;
-            transition: color 0.3s ease, background-color 0.3s ease;
-        }
-
-        .nav a:hover {
-            color: #ffffff;
-            background-color: #4CAF50;
-            border-radius: 5px;
-        }
-
-        .nav .logout-btn {
-            color: #ff4444;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 500;
+            display: block;
+            padding: 12px 15px;
+            border-radius: 6px;
+            transition: background 0.3s ease, color 0.3s ease;
             cursor: pointer;
-            padding: 8px 12px;
-            transition: color 0.3s ease, background-color 0.3s ease;
         }
 
-        .nav .logout-btn:hover {
+        .sidebar ul li a:hover, .sidebar ul li span:hover, .sidebar ul li a.active {
+            background: #2a4066;
             color: #ffffff;
-            background-color: #ff4444;
-            border-radius: 5px;
         }
 
+        .sidebar .logout-btn {
+            color: #ff5c5c;
+        }
+
+        .sidebar .logout-btn:hover {
+            background: #ff5c5c;
+            color: #ffffff;
+        }
+
+        /* Form Container */
         .form-container {
             background: #ffffff;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 800px; /* Increased default width */
+            margin: 30px auto; /* Adjusted margin */
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            position: relative;
+            margin-left: 280px; /* Offset for sidebar + padding */
+            width: calc(100% - 280px); /* Full width minus sidebar and padding */
         }
 
         .form-container:hover {
@@ -76,31 +96,31 @@
         h1 {
             text-align: center;
             color: #333;
-            font-size: 28px;
+            font-size: 32px; /* Larger default */
             margin-bottom: 30px;
             font-weight: 600;
         }
 
         h2 {
             color: #555;
-            font-size: 20px;
-            margin: 25px 0 15px;
+            font-size: 24px; /* Larger default */
+            margin: 30px 0 15px;
             font-weight: 500;
             border-bottom: 2px solid #4CAF50;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
         }
 
         label {
             display: block;
-            font-size: 14px;
+            font-size: 15px; /* Larger default */
             color: #555;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 500;
         }
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 14px; /* Increased padding */
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -117,7 +137,7 @@
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 16px; /* Increased padding */
             background-color: #4CAF50;
             color: #fff;
             border: none;
@@ -137,35 +157,155 @@
             transform: translateY(0);
         }
 
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: #1a2a44;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
         /* Responsive Design */
-        @media (max-width: 600px) {
-            .nav, .form-container {
-                max-width: 100%;
-                padding: 20px;
+        @media (min-width: 1440px) {
+            .sidebar {
+                width: 300px;
             }
+
+            .form-container {
+                max-width: 1000px; /* Wider for larger screens */
+                margin-left: 330px; /* Adjusted for wider sidebar */
+                width: calc(100% - 330px);
+                padding: 50px; /* More padding */
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 26px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input {
+                padding: 16px;
+                font-size: 18px; /* Larger font */
+            }
+
+            button {
+                padding: 18px;
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100vh;
+                z-index: 1000;
+                padding: 10px;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .form-container {
+                max-width: 100%;
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+                margin: 15px auto; /* Reduced margin */
+            }
+
+            .menu-toggle {
+                display: block;
+                position: sticky;
+                top: 0;
+                z-index: 1100;
+            }
+
             h1 {
                 font-size: 24px;
             }
+
             h2 {
                 font-size: 18px;
             }
+
+            label {
+                font-size: 14px;
+            }
+
             input, button {
                 padding: 10px;
                 font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar ul li {
+                margin: 10px 0;
+            }
+
+            .sidebar ul li a, .sidebar ul li span {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 16px;
+            }
+
+            label {
+                font-size: 12px;
+            }
+
+            input, button {
+                padding: 8px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="nav">
-        <a href="{{ url_for('stock') }}">Stock</a>
-        <a href="{{ url_for('report') }}">Stock Report</a>
-        <a href="{{ url_for('entry_form') }}">Business Entry Form</a>
-        <a href="{{ url_for('business_report') }}">Business Report</a>
-        <span class="logout-btn" onclick="logout()">Logout</span>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Stock Management</h2>
+        <ul>
+            <li><a href="{{ url_for('stock') }}">Stock</a></li>
+            <li><a href="{{ url_for('report') }}">Stock Report</a></li>
+            <li><a href="{{ url_for('entry_form') }}" class="active">Business Entry Form</a></li>
+            <li><a href="{{ url_for('business_report') }}">Business Report</a></li>
+            <li><span class="logout-btn" onclick="logout()">Logout</span></li>
+        </ul>
     </div>
 
+    <!-- Form Container -->
     <div class="form-container">
         <h1>Business Entry Form</h1>
         <form action="/submit_entry" method="POST">
@@ -210,10 +350,14 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+
         function logout() {
             window.location.href = "{{ url_for('logout') }}";
         }
     </script>
-
 </body>
 </html>

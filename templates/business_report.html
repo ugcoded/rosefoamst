@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Entries</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; }
+        .nav {
+            max-width: 1200px; /* Wider to match content */
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .nav a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+        .nav a:hover {
+            color: #45a049;
+        }
+        .nav .logout-btn {
+            color: #ff4444;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.3s;
+        }
+        .nav .logout-btn:hover {
+            color: #cc0000;
+        }
+        .entries-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Space between tables */
+            justify-content: space-between;
+        }
+        .entry-table {
+            width: 48%; /* Slightly less than half to account for gap */
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        .entry-table th, .entry-table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .entry-table th {
+            background-color: #C5E3BA;
+            width: 40%;
+            font-weight: bold;
+        }
+        .entry-table td {
+            width: 60%;
+        }
+        .entry-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .no-entries {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .back-btn:hover {
+            color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('stock') }}">Stock</a>
+        <a href="{{ url_for('report') }}">Stock Report</a>
+        <a href="{{ url_for('entry_form') }}">Business Entry Form</a>
+        <a href="{{ url_for('business_report') }}">Business Report</a>
+        <span class="logout-btn" onclick="logout()">Logout</span>
+    </div>
+
+    <h1>Business Entries</h1>
+
+    {% if entries %}
+        <div class="entries-container">
+            {% for entry in entries %}
+            <table class="entry-table">
+                <tr>
+                    <th>Date</th>
+                    <td>{{ entry['date'] }}</td>
+                </tr>
+                <tr>
+                    <th>Branch</th>
+                    <td>{{ entry['branch'] }}</td>
+                </tr>
+                <tr>
+                    <th>Opening Cash</th>
+                    <td>{{ entry['opening_cash'] }}</td>
+                </tr>
+                <tr>
+                    <th>Sales</th>
+                    <td>{{ entry['sales'] }}</td>
+                </tr>
+                <tr>
+                    <th>Paid</th>
+                    <td>{{ entry['paid'] }}</td>
+                </tr>
+                <tr>
+                    <th>Bank</th>
+                    <td>{{ entry['bank'] }}</td>
+                </tr>
+                <tr>
+                    <th>Closing Balance</th>
+                    <td>{{ entry['closing_balance'] }}</td>
+                </tr>
+                <tr>
+                    <th>Opening Debt</th>
+                    <td>{{ entry['debt_opening'] }}</td>
+                </tr>
+                <tr>
+                    <th>Debt Given</th>
+                    <td>{{ entry['debt_given'] }}</td>
+                </tr>
+                <tr>
+                    <th>Debt Paid</th>
+                    <td>{{ entry['debt_paid'] }}</td>
+                </tr>
+                <tr>
+                    <th>Debt Closing</th>
+                    <td>{{ entry['debt_closing'] }}</td>
+                </tr>
+                <tr>
+                    <th>Cumulative Opening</th>
+                    <td>{{ entry['cumulative_opening'] }}</td>
+                </tr>
+                <tr>
+                    <th>Cumulative Sales</th>
+                    <td>{{ entry['cumulative_sales'] }}</td>
+                </tr>
+                <tr>
+                    <th>Cumulative Closing</th>
+                    <td>{{ entry['cumulative_closing'] }}</td>
+                </tr>
+            </table>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-entries">No business entries found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('entry_form') }}" class="back-btn">Back to Entry Form</a>
+
+    <script>
+        function logout() {
+            window.location.href = "{{ url_for('logout') }}";
+        }
+    </script>
+</body>
+</html>

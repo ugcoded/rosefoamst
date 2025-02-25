@@ -18,7 +18,7 @@
             color: #333;
             min-height: 100vh;
             display: flex;
-            flex-direction: column; /* Ensure content stacks on smaller screens */
+            flex-direction: column;
         }
 
         /* Sidebar */
@@ -30,7 +30,10 @@
             height: 100%;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition for mobile */
+            transition: width 0.3s ease, transform 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         .sidebar h2 {
@@ -77,12 +80,16 @@
         /* Main Content */
         .main-content {
             flex: 1;
+            margin-left: 250px;
             padding: 30px;
-            margin-left: 250px; /* Adjusted dynamically on mobile */
+            max-width: 1400px;
+            width: calc(100% - 250px);
+            margin-right: auto;
+            margin-left: 250px auto;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 600;
             color: #1a2a44;
             margin-bottom: 30px;
@@ -127,7 +134,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             padding: 20px;
             transition: transform 0.3s ease;
-            width: 100%; /* Ensure full width on mobile */
+            width: 100%;
         }
 
         .branch-section:hover, .branch-table:hover {
@@ -135,7 +142,7 @@
         }
 
         .branch-section h2, .branch-table h2 {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 600;
             color: #1a2a44;
             margin-bottom: 20px;
@@ -145,17 +152,21 @@
         /* Horizontal Tables (Stock) */
         .horizontal-table {
             width: 100%;
+            max-width: 100%; /* Ensure it fills container */
             border-collapse: collapse;
             margin-bottom: 20px;
-            overflow-x: auto; /* Allow horizontal scrolling on small screens */
-            display: block; /* Enable scrolling */
+            overflow-x: auto;
+            display: block;
+            table-layout: auto; /* Allow columns to adjust naturally */
         }
 
         .horizontal-table th, .horizontal-table td {
-            padding: 12px;
+            padding: 20px;
             border: 1px solid #e0e0e0;
-            font-size: 14px;
-            min-width: 100px; /* Ensure minimum width for readability */
+            font-size: 15px;
+            min-width: 100px;
+            vertical-align: middle;
+            white-space: nowrap; /* Prevent wrapping unless necessary */
         }
 
         .horizontal-table th {
@@ -164,6 +175,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-size: 16px;
         }
 
         .horizontal-table td {
@@ -178,6 +190,39 @@
             background: #f1f3f5;
         }
 
+        /* Stock Table Column Widths */
+        .stock-table th:nth-child(1), .stock-table td:nth-child(1) { width: 25%; } /* Date */
+        .stock-table th:nth-child(2), .stock-table td:nth-child(2) { width: 40%; } /* Product */
+        .stock-table th:nth-child(3), .stock-table td:nth-child(3) { width: 15%; } /* Quantity */
+        .stock-table th:nth-child(4), .stock-table td:nth-child(4) { width: 20%; } /* Action */
+
+        /* Business Table Column Widths */
+        .business-table th:nth-child(1), .business-table td:nth-child(1) { width: 10%; } /* Date */
+        .business-table th:nth-child(2), .business-table td:nth-child(2) { width: 10%; } /* Branch */
+        .business-table th:nth-child(3), .business-table td:nth-child(3) { width: 6%; } /* Opening Cash */
+        .business-table th:nth-child(4), .business-table td:nth-child(4) { width: 6%; } /* Sales */
+        .business-table th:nth-child(5), .business-table td:nth-child(5) { width: 6%; } /* Paid */
+        .business-table th:nth-child(6), .business-table td:nth-child(6) { width: 6%; } /* Bank */
+        .business-table th:nth-child(7), .business-table td:nth-child(7) { width: 6%; } /* Closing Balance */
+        .business-table th:nth-child(8), .business-table td:nth-child(8) { width: 6%; } /* Debt Opening */
+        .business-table th:nth-child(9), .business-table td:nth-child(9) { width: 6%; } /* Debt Given */
+        .business-table th:nth-child(10), .business-table td:nth-child(10) { width: 6%; } /* Debt Paid */
+        .business-table th:nth-child(11), .business-table td:nth-child(11) { width: 6%; } /* Debt Closing */
+        .business-table th:nth-child(12), .business-table td:nth-child(12) { width: 6%; } /* Cumulative Opening */
+        .business-table th:nth-child(13), .business-table td:nth-child(13) { width: 6%; } /* Cumulative Sales */
+        .business-table th:nth-child(14), .business-table td:nth-child(14) { width: 6%; } /* Cumulative Closing */
+        .business-table th:nth-child(15), .business-table td:nth-child(15) { width: 8%; } /* Action */
+
+        /* Chart Table Column Widths */
+        .chart-table th:nth-child(1), .chart-table td:nth-child(1) { width: 40%; } /* Product */
+        .chart-table th:nth-child(2), .chart-table td:nth-child(2) { width: 40%; } /* Top Selling Branch */
+        .chart-table th:nth-child(3), .chart-table td:nth-child(3) { width: 20%; } /* Total Quantity Sold */
+
+        /* Messages Table Column Widths */
+        .message-table th:nth-child(1), .message-table td:nth-child(1) { width: 20%; } /* Branch */
+        .message-table th:nth-child(2), .message-table td:nth-child(2) { width: 20%; } /* Date */
+        .message-table th:nth-child(3), .message-table td:nth-child(3) { width: 60%; } /* Message */
+
         /* Vertical Tables (Business Entries) */
         .entries-wrapper {
             display: flex;
@@ -187,14 +232,15 @@
         }
 
         .entry-table {
-            width: 300px;
-            max-width: 100%; /* Ensure it fits on smaller screens */
+            width: 350px;
+            max-width: 100%;
             border-collapse: collapse;
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            table-layout: fixed; /* Fixed layout for consistent column widths */
         }
 
         .entry-table:hover {
@@ -203,9 +249,10 @@
         }
 
         .entry-table th, .entry-table td {
-            padding: 10px 12px;
+            padding: 12px 15px;
             border: 1px solid #e0e0e0;
-            font-size: 14px;
+            font-size: 15px;
+            vertical-align: middle;
         }
 
         .entry-table th {
@@ -215,11 +262,14 @@
             text-align: right;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            width: 40%; /* Fixed width for labels */
+            white-space: nowrap;
         }
 
         .entry-table td {
             color: #555;
             text-align: left;
+            width: 60%; /* Fixed width for values */
         }
 
         .entry-table tr:nth-child(even) {
@@ -235,11 +285,11 @@
             background-color: #dc3545;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 15px;
             cursor: pointer;
             margin: 2px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 13px;
             transition: background-color 0.3s ease;
         }
 
@@ -259,13 +309,13 @@
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             margin: 20px auto;
             display: block;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             transition: background-color 0.3s ease;
         }
 
@@ -274,10 +324,10 @@
         }
 
         .delete-input {
-            width: 50px;
-            padding: 5px;
+            width: 60px;
+            padding: 6px;
             text-align: center;
-            font-size: 12px;
+            font-size: 13px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
@@ -285,24 +335,24 @@
         /* Edit Form */
         .edit-form {
             display: none;
-            padding: 15px;
+            padding: 20px;
             border: 1px solid #d1d9e6;
             border-radius: 6px;
             background: #f9f9f9;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin: 10px 0;
-            width: 100%; /* Full width on mobile */
+            width: 100%;
         }
 
         .edit-form input {
             width: 100%;
-            padding: 8px;
-            margin: 6px 0;
+            padding: 10px;
+            margin: 8px 0;
             border: 1px solid #d1d9e6;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 13px;
             transition: border-color 0.3s ease;
-            box-sizing: border-box; /* Include padding in width */
+            box-sizing: border-box;
         }
 
         .edit-form input:focus {
@@ -314,12 +364,12 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 15px;
             cursor: pointer;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 13px;
             transition: background-color 0.3s ease;
-            width: 100%; /* Full width on mobile */
+            width: 100%;
             margin-top: 10px;
         }
 
@@ -329,13 +379,16 @@
 
         /* Charts and Messages */
         .chart-container {
+            position: relative;
+            width: 100%;
             max-width: 100%;
+            height: 450px;
             margin: 0 auto 40px;
             background: #ffffff;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            overflow-x: auto; /* Allow horizontal scrolling if needed */
+            overflow-x: auto;
         }
 
         .chart-table-container, .message-section {
@@ -345,11 +398,11 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            overflow-x: auto; /* Allow horizontal scrolling if needed */
+            overflow-x: auto;
         }
 
         .message-section h2 {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 600;
             color: #1a2a44;
             margin-bottom: 20px;
@@ -358,7 +411,7 @@
 
         /* Mobile Menu Toggle */
         .menu-toggle {
-            display: none; /* Hidden by default on desktop */
+            display: none;
             background: #1a2a44;
             color: #ffffff;
             border: none;
@@ -369,34 +422,114 @@
             text-align: left;
         }
 
-        /* Enhanced Responsive Design */
+        /* Responsive Design */
+        @media (min-width: 1440px) {
+            .sidebar {
+                width: 300px;
+            }
+
+            .main-content {
+                margin-left: 300px;
+                max-width: 1600px;
+                width: calc(100% - 300px);
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .branch-section h2, .branch-table h2, .message-section h2 {
+                font-size: 26px;
+            }
+
+            .horizontal-table th, .horizontal-table td {
+                padding: 25px;
+                font-size: 16px;
+            }
+
+            .horizontal-table th {
+                font-size: 18px;
+            }
+
+            .entry-table {
+                width: 400px;
+            }
+
+            .entry-table th, .entry-table td {
+                padding: 15px 18px;
+                font-size: 16px;
+            }
+
+            #search-input {
+                padding: 14px;
+                font-size: 16px;
+                width: 400px;
+            }
+
+            .delete-btn, .edit-btn {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+
+            .download-btn {
+                padding: 14px 25px;
+                font-size: 16px;
+            }
+
+            .delete-input {
+                width: 70px;
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .edit-form {
+                padding: 25px;
+            }
+
+            .edit-form input {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .edit-form button {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+
+            .chart-container {
+                height: 500px;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
-                flex-direction: column; /* Stack sidebar and content vertically */
+                flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
                 position: fixed;
                 top: 0;
-                left: -100%; /* Hidden off-screen by default */
+                left: -100%;
                 height: 100vh;
                 z-index: 1000;
                 padding: 10px;
-                transition: left 0.3s ease; /* Slide in/out */
+                transition: left 0.3s ease;
             }
 
             .sidebar.active {
-                left: 0; /* Slide in when active */
+                left: 0;
             }
 
             .main-content {
-                margin-left: 0; /* Remove sidebar offset */
+                margin-left: 0;
                 padding: 15px;
+                max-width: 100%;
+                width: 100%;
             }
 
             .menu-toggle {
-                display: block; /* Show toggle button on mobile */
+                display: block;
                 position: sticky;
                 top: 0;
                 z-index: 1100;
@@ -413,6 +546,16 @@
             .horizontal-table th, .horizontal-table td {
                 font-size: 12px;
                 padding: 8px;
+            }
+
+            .stock-table th:nth-child(1), .stock-table td:nth-child(1),
+            .stock-table th:nth-child(2), .stock-table td:nth-child(2),
+            .stock-table th:nth-child(3), .stock-table td:nth-child(3),
+            .stock-table th:nth-child(4), .stock-table td:nth-child(4),
+            .business-table th:nth-child(n), .business-table td:nth-child(n),
+            .chart-table th:nth-child(n), .chart-table td:nth-child(n),
+            .message-table th:nth-child(n), .message-table td:nth-child(n) {
+                width: auto; /* Reset column widths for mobile */
             }
 
             .entry-table {
@@ -443,6 +586,10 @@
                 padding: 8px 16px;
                 font-size: 12px;
             }
+
+            .chart-container {
+                height: 300px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -466,12 +613,16 @@
             .horizontal-table th, .horizontal-table td {
                 font-size: 10px;
                 padding: 6px;
-                min-width: 80px; /* Smaller min-width for tiny screens */
+                min-width: 80px;
             }
 
             .delete-input {
                 width: 40px;
                 font-size: 10px;
+            }
+
+            .chart-container {
+                height: 250px;
             }
         }
     </style>
@@ -508,7 +659,7 @@
                 <div class="branch-section">
                     <h2>{{ branch }}</h2>
                     {% if stock_entries %}
-                        <table class="horizontal-table">
+                        <table class="horizontal-table stock-table">
                             <tr>
                                 <th>Date</th>
                                 <th>Product</th>
@@ -541,7 +692,7 @@
         <!-- Business Section -->
         <div id="business-section" class="section">
             {% if business_entries %}
-                <table class="horizontal-table">
+                <table class="horizontal-table business-table">
                     <tr>
                         <th>Date</th>
                         <th>Branch</th>
@@ -573,7 +724,7 @@
                         <td>{{ entry['debt_paid'] }}</td>
                         <td>{{ entry['debt_closing'] }}</td>
                         <td>{{ entry['cumulative_opening'] }}</td>
-                        <td>{{ entry['sales'] }}</td>
+                        <td>{{ entry['cumulative_sales'] }}</td>
                         <td>{{ entry['cumulative_closing'] }}</td>
                         <td>
                             <button class="edit-btn" onclick="toggleEditForm('edit-form-{{ entry['id'] }}')">Edit</button>
@@ -616,7 +767,7 @@
             </div>
             <div class="chart-table-container">
                 {% if top_selling_branches %}
-                    <table class="horizontal-table">
+                    <table class="horizontal-table chart-table">
                         <tr>
                             <th>Product</th>
                             <th>Top Selling Branch</th>
@@ -641,7 +792,7 @@
             <div class="message-section">
                 <h2>Messages from Branches</h2>
                 {% if messages %}
-                    <table class="horizontal-table">
+                    <table class="horizontal-table message-table">
                         <tr>
                             <th>Branch</th>
                             <th>Date</th>
@@ -674,7 +825,7 @@
             document.getElementById(section + '-section').classList.add('active');
             document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
             if (window.innerWidth <= 768) {
-                toggleSidebar(); // Close sidebar on mobile after selection
+                toggleSidebar();
             }
         }
 
@@ -776,10 +927,12 @@
             const datasets = branches.map(branch => ({
                 label: branch,
                 data: products.map(product => chartData[product][branch] || 0),
-                backgroundColor: '#' + Math.floor(Math.random()*16777215).toString(16)
+                backgroundColor: '#' + Math.floor(Math.random()*16777215).toString(16),
+                borderWidth: 1
             }));
 
-            new Chart(document.getElementById('productSalesChart'), {
+            const ctx = document.getElementById('productSalesChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: products,
@@ -790,32 +943,68 @@
                         title: {
                             display: true,
                             text: 'Product Sales by Branch',
-                            font: { size: 18, weight: '600' },
-                            color: '#1a2a44'
+                            font: { size: 20, weight: '600' },
+                            color: '#1a2a44',
+                            padding: 15
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 },
+                                boxWidth: 20,
+                                padding: 15,
+                                filter: function(legendItem) {
+                                    return legendItem.text.length > 0;
+                                }
+                            },
+                            maxHeight: 100
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
                         }
                     },
                     scales: {
-                        x: { 
+                        x: {
                             stacked: true,
                             ticks: {
-                                font: { size: 12 },
-                                maxRotation: 45, /* Rotate labels for better fit */
-                                minRotation: 45
+                                font: { size: 14 },
+                                maxRotation: 90,
+                                minRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            },
+                            title: {
+                                display: true,
+                                text: 'Products',
+                                font: { size: 16, weight: '600' },
+                                color: '#1a2a44'
                             }
                         },
                         y: {
                             stacked: true,
                             beginAtZero: true,
+                            ticks: {
+                                font: { size: 14 }
+                            },
                             title: {
                                 display: true,
                                 text: 'Quantity Sold',
-                                font: { size: 14, weight: '600' },
+                                font: { size: 16, weight: '600' },
                                 color: '#1a2a44'
                             }
                         }
                     },
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000
+                    }
                 }
             });
         });

@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
-import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import logging
 import csv
@@ -13,17 +14,25 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'a_very_secure_random_key_change_me')
 
+# Database connection function for PostgreSQL
 def get_db_connection():
-    conn = sqlite3.connect('stock.db')
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT', '5432'),
+        cursor_factory=RealDictCursor  # Similar to SQLite's Row factory
+    )
     return conn
 
+# Initialize the database with tables
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS stock_out (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             date TEXT,
             branch TEXT,
             product TEXT,
@@ -32,7 +41,7 @@ def init_db():
     ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS business_entries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             branch TEXT,
             date TEXT,
             opening_cash REAL,
@@ -49,7 +58,7 @@ def init_db():
     ''')
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             branch TEXT,
             date TEXT,
             content TEXT
@@ -144,7 +153,7 @@ def admin():
     for branch in branches:
         branch_name = branch['branch']
         cursor.execute(
-            "SELECT id, date, product, SUM(quantity_out) AS quantity_out FROM stock_out WHERE branch = ? GROUP BY id, date, product ORDER BY date DESC",
+            "SELECT id, date, product, SUM(quantity_out) AS quantity_out FROM stock_out WHERE branch = %s GROUP BY id, date, product ORDER BY date DESC",
             (branch_name,)
         )
         stock_data_by_branch[branch_name] = cursor.fetchall()
@@ -229,7 +238,7 @@ def update_stock():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT quantity_out FROM stock_out WHERE branch = ? AND product = ? AND date = ?",
+            "SELECT quantity_out FROM stock_out WHERE branch = %s AND product = %s AND date = %s",
             (branch, product, date)
         )
         existing_record = cursor.fetchone()
@@ -237,13 +246,13 @@ def update_stock():
         if existing_record:
             new_quantity = existing_record['quantity_out'] + quantity_out
             cursor.execute(
-                "UPDATE stock_out SET quantity_out = ? WHERE branch = ? AND product = ? AND date = ?",
+                "UPDATE stock_out SET quantity_out = %s WHERE branch = %s AND product = %s AND date = %s",
                 (new_quantity, branch, product, date)
             )
             logging.info(f"Updated stock: {product}, {date}, new qty={new_quantity}")
         else:
             cursor.execute(
-                "INSERT INTO stock_out (date, branch, product, quantity_out) VALUES (?, ?, ?, ?)",
+                "INSERT INTO stock_out (date, branch, product, quantity_out) VALUES (%s, %s, %s, %s)",
                 (date, branch, product, quantity_out)
             )
             logging.info(f"Inserted stock: {product}, {date}, qty={quantity_out}")
@@ -251,7 +260,7 @@ def update_stock():
         conn.commit()
         conn.close()
         return jsonify({'message': f"Stock updated for {product} on {date}."})
-    except sqlite3.Error as e:
+    except psycopg2.Error as e:
         logging.error(f"Database error in update_stock: {str(e)}")
         return jsonify({'error': f"Failed to update stock: {str(e)}"}), 500
 
@@ -272,14 +281,14 @@ def send_message():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO messages (branch, date, content) VALUES (?, ?, ?)",
+            "INSERT INTO messages (branch, date, content) VALUES (%s, %s, %s)",
             (branch, date, message_content)
         )
         conn.commit()
         conn.close()
         logging.info(f"Message sent from {branch} at {date}")
         return jsonify({'success': True, 'message': 'Message sent successfully'})
-    except sqlite3.Error as e:
+    except psycopg2.Error as e:
         logging.error(f"Database error in send_message: {str(e)}")
         return jsonify({'error': f"Failed to send message: {str(e)}"}), 500
 
@@ -293,7 +302,7 @@ def delete_stock(stock_id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT quantity_out FROM stock_out WHERE id = ?", (stock_id,))
+    cursor.execute("SELECT quantity_out FROM stock_out WHERE id = %s", (stock_id,))
     row = cursor.fetchone()
 
     if not row:
@@ -307,10 +316,10 @@ def delete_stock(stock_id):
 
     new_qty = current_qty - qty_to_delete
     if new_qty > 0:
-        cursor.execute("UPDATE stock_out SET quantity_out = ? WHERE id = ?", (new_qty, stock_id))
+        cursor.execute("UPDATE stock_out SET quantity_out = %s WHERE id = %s", (new_qty, stock_id))
         logging.info(f"Admin partially deleted stock ID {stock_id}, new qty={new_qty}")
     else:
-        cursor.execute("DELETE FROM stock_out WHERE id = ?", (stock_id,))
+        cursor.execute("DELETE FROM stock_out WHERE id = %s", (stock_id,))
         logging.info(f"Admin fully deleted stock ID {stock_id}")
 
     conn.commit()
@@ -330,7 +339,7 @@ def report():
             """
             SELECT date, product, SUM(quantity_out) AS total_quantity
             FROM stock_out
-            WHERE branch = ?
+            WHERE branch = %s
             GROUP BY date, product
             ORDER BY date DESC
             """,
@@ -340,7 +349,7 @@ def report():
         conn.close()
         logging.info(f"Fetched {len(stock_data)} stock records for {branch}")
         return render_template('report.html', branch=branch, stock_data=stock_data)
-    except sqlite3.Error as e:
+    except psycopg2.Error as e:
         logging.error(f"Database error in report: {str(e)}")
         return render_template('report.html', branch=branch, stock_data=[], error=f"Database error: {str(e)}")
 
@@ -384,7 +393,7 @@ def submit_entry():
                 branch, date, opening_cash, sales, paid, bank,
                 debt_opening, debt_given, debt_paid,
                 cumulative_opening, cumulative_sales, cumulative_closing
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ''', (
             branch, date, opening_cash, sales, paid, bank,
             debt_opening, debt_given, debt_paid,
@@ -393,7 +402,7 @@ def submit_entry():
         conn.commit()
         conn.close()
         logging.info(f"Business entry submitted for {branch} on {date}")
-    except sqlite3.Error as e:
+    except psycopg2.Error as e:
         logging.error(f"Database error in submit_entry: {str(e)}")
         return render_template('entry_form.html', error=f"Database error: {str(e)}", branch=branch)
 
@@ -412,7 +421,7 @@ def business_report():
                debt_opening, debt_given, debt_paid,
                cumulative_opening, cumulative_sales, cumulative_closing
         FROM business_entries
-        WHERE branch = ?
+        WHERE branch = %s
         ORDER BY date DESC
     ''', (branch,))
     entries_raw = cursor.fetchall()
@@ -460,14 +469,14 @@ def delete_business_entry(entry_id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM business_entries WHERE id = ?", (entry_id,))
+    cursor.execute("SELECT id FROM business_entries WHERE id = %s", (entry_id,))
     row = cursor.fetchone()
 
     if not row:
         conn.close()
         return jsonify({"success": False, "message": "Business entry not found"}), 404
 
-    cursor.execute("DELETE FROM business_entries WHERE id = ?", (entry_id,))
+    cursor.execute("DELETE FROM business_entries WHERE id = %s", (entry_id,))
     conn.commit()
     conn.close()
     logging.info(f"Admin deleted business entry ID {entry_id}")
@@ -498,7 +507,7 @@ def edit_business_entry(entry_id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM business_entries WHERE id = ?", (entry_id,))
+    cursor.execute("SELECT id FROM business_entries WHERE id = %s", (entry_id,))
     row = cursor.fetchone()
 
     if not row:
@@ -507,10 +516,10 @@ def edit_business_entry(entry_id):
 
     cursor.execute('''
         UPDATE business_entries SET
-            date = ?, branch = ?, opening_cash = ?, sales = ?, paid = ?, bank = ?,
-            debt_opening = ?, debt_given = ?, debt_paid = ?,
-            cumulative_opening = ?, cumulative_sales = ?, cumulative_closing = ?
-        WHERE id = ?
+            date = %s, branch = %s, opening_cash = %s, sales = %s, paid = %s, bank = %s,
+            debt_opening = %s, debt_given = %s, debt_paid = %s,
+            cumulative_opening = %s, cumulative_sales = %s, cumulative_closing = %s
+        WHERE id = %s
     ''', (
         date, branch, opening_cash, sales, paid, bank,
         debt_opening, debt_given, debt_paid,

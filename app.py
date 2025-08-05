@@ -16,16 +16,21 @@ app.secret_key = os.getenv('SECRET_KEY', 'a_very_secure_random_key_change_me')
 
 # Database connection function for PostgreSQL
 def get_db_connection():
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise ValueError("DATABASE_URL environment variable not set")
+    
+    result = urlparse(database_url)
     conn = psycopg2.connect(
-        dbname=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT', '5432'),
-        cursor_factory=RealDictCursor  # Similar to SQLite's Row factory
+        database=result.path[1:],  # Remove leading '/'
+        user=result.username,
+        password=result.password,
+        host=result.hostname,
+        port=result.port,
+        cursor_factory=RealDictCursor,
+        sslmode="require"  # Render requires SSL for PostgreSQL
     )
     return conn
-
 # Initialize the database with tables
 def init_db():
     conn = get_db_connection()
@@ -601,3 +606,4 @@ def download_business_csv():
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
